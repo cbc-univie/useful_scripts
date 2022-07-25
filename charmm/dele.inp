@@ -1,0 +1,46 @@
+* delete all but one residue of binary trajectory
+* including drudes
+*
+
+!=======================================================================
+! Force field
+!=======================================================================
+open  unit 10 read form name "./clap_aug2016_pol.rtf"
+read  unit 10 rtf card 
+close unit 10
+
+open  unit 10 read form name "./clap_aug2016_pol.prm"
+read  unit 10 para card
+close unit 10
+
+read sequence SWM4 2110
+generate SWM4 setup warn noangle nodihedral drude dmass 0.4
+
+read sequence IM41 320
+generate IM41 setup warn drude dmass 0.4
+
+read sequence BF4 220
+generate BF4 setup warn drude dmass 0.4
+
+read sequence CL 100
+generate CL setup warn drude dmass 0.4
+
+
+!=======================================================================
+! Coordinates
+!=======================================================================
+open  unit 10 read form name "./im41_320_cl_100_bf4_220_swm4_2110_rep1_equil_polarizable.crd"
+read  unit 10 coor card 
+close unit 10
+
+coor copy comp
+open unit 21 read unform name "./traj/polarizable_nvt/im41_320_cl_100_bf4_220_swm4_2110_rep1_polarizable_1.dcd"
+open unit 81 writ unform name "nonpol_nvt.dcd"
+merge first 21 nunit 1 output 81 -
+sele .not. ( type D* ) end
+boml -1
+delete atom sele ( type D* ) end
+boml 0
+write psf card name nonpol_nvt.psf
+
+stop

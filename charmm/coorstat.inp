@@ -1,0 +1,33 @@
+* Query coordinate locations and translate them to first octant
+*
+
+DIMENS 3000000 CHSIZE 3000000
+
+ioformat extended
+!================================================================
+! Topology and parameters
+!================================================================
+stream toppar.str
+
+open unit 10 name "step3_pbcsetup.psf" read form
+read psf unit 10 card
+clos unit 10
+
+
+open unit 12 name "step3_pbcsetup.crd" read form
+read coor unit 12 card
+clos unit 12
+
+coor stat
+calc xr = -1*?XMIN
+calc yr = -1*?YMIN
+calc zr = -1*?ZMIN
+
+coor tran xdir @XR ydir @YR zdir @ZR
+coor stat
+
+open unit 12 name "prot.cor" writ form
+writ coor unit 12 card
+clos unit 12
+
+stop

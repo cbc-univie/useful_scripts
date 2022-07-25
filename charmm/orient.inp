@@ -1,0 +1,34 @@
+* read binary trajectory (of single residue)
+* and orient it along axes of inertia
+*
+
+!=======================================================================
+! Force field
+!=======================================================================
+open  unit 10 read form name "./clap_aug2016_pol.rtf"
+read  unit 10 rtf card 
+close unit 10
+
+open  unit 10 read form name "./clap_aug2016_pol.prm"
+read  unit 10 para card
+close unit 10
+
+read sequence IM41 1
+generate IM41 setup warn
+!=======================================================================
+! Coordinates
+!=======================================================================
+
+open  unit 10 read form name "./pol.crd"
+read  unit 10 coor card 
+close unit 10
+
+coor copy comp
+open unit 51 read unform name "pol.dcd"
+open unit 81 write unform name "orient.dcd"
+merge first 51 nunit 1 output 81 -
+coor orie rms
+write psf card name "orient.psf"
+
+stop
+

@@ -1,0 +1,44 @@
+* write last coordinate of binary trajectory to text
+*
+
+!=======================================================================
+! Force field
+!=======================================================================
+open  unit 10 read form name "./clap_aug2016_nonpol.rtf"
+read  unit 10 rtf card 
+close unit 10
+
+open  unit 10 read form name "./clap_aug2016_nonpol.prm"
+read  unit 10 para card
+close unit 10
+
+read sequence SWM4 2110
+generate SWM4 setup warn noangle nodihedral
+
+read sequence IM41 320
+generate IM41 setup warn
+
+read sequence BF4 220
+generate BF4 setup warn
+
+read sequence CL 100
+generate CL setup warn
+
+
+!=======================================================================
+! Coordinates
+!=======================================================================
+open read unit 21 file name "./traj/nonpolarizable_npt/im41_320_cl_100_bf4_220_swm4_2110_rep1_100.dcd"
+traj query unit 21
+traj firstu 21 nunit 1 skip 50
+set i 1
+label beginread
+  traj read
+  incr i by 1
+if i .lt. ?nfile goto beginread
+
+open  unit 10 writ form name "./nonpol.cor"
+writ  unit 10 coor card 
+close unit 10
+
+stop

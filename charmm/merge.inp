@@ -1,0 +1,56 @@
+* merge binary trajectories (and delete drudes in the process)
+* while also deleting all but one residue
+*
+
+!=======================================================================
+! Force field
+!=======================================================================
+open  unit 10 read form name "./clap_aug2016_pol.rtf"
+read  unit 10 rtf card 
+close unit 10
+
+open  unit 10 read form name "./clap_aug2016_pol.prm"
+read  unit 10 para card
+close unit 10
+
+read sequence SWM4 2110
+generate SWM4 setup warn noangle nodihedral drude dmass 0.4
+
+read sequence IM41 320
+generate IM41 setup warn drude dmass 0.4
+
+read sequence BF4 220
+generate BF4 setup warn drude dmass 0.4
+
+read sequence CL 100
+generate CL setup warn drude dmass 0.4
+
+
+!=======================================================================
+! Coordinates
+!=======================================================================
+!ioformat extended
+!open  unit 10 read form name "im41_320_cl_100_bf4_220_swm4_2110_polarizable.psf"
+!read  unit 10 psf card 
+!close unit 10
+
+open  unit 10 read form name "./im41_320_cl_100_bf4_220_swm4_2110_rep1_equil_polarizable.crd"
+read  unit 10 coor card 
+close unit 10
+
+coor copy comp
+set number = 51
+label readdcd
+  calc unnum = @number - 30
+  open unit @unnum read unform name "./traj/polarizable_nvt/im41_320_cl_100_bf4_220_swm4_2110_rep1_polarizable_@NUMBER.dcd"
+  incr number by 1
+if @number .le. 100 goto readdcd
+open unit 81 write unform name "im41_2.dcd"
+merge first 21 nunit 50 output 81 -
+sele ires 2111 .and. .not. ( type D* ) end
+boml -1
+delete atom sele .not.( ires 2111 .and. .not. ( type D* )) end
+boml 0
+write psf card name im41_new.psf
+
+stop
