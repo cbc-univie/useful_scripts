@@ -1,0 +1,5 @@
+# ssh version 8 (including Debian 11) either form of:
+scp -J user@intermediate /local/path/file.txt user@target:/remote/path/
+scp -J user@intermediate user@target:/remote/path /local/path
+# ssh version 7.3 (Debian 9)
+scp -o ProxyJump=user@intermediate /local/path/file.txt user@target:/remote/path

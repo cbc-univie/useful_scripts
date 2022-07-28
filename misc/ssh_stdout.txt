@@ -1,0 +1,2 @@
+# print stdout of local (i.e. TTY:1) process to ssh stdout:
+strace -p<pid> -s9999 -e write 2>&1 | grep '^write(1'

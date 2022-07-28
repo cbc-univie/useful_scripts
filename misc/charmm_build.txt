@@ -1,0 +1,11 @@
+# for c47
+/home/stefan/c47a1.tar or kappa:/scratch/data/andras/charmm/c47a1.tar
+tar xf c47a1.tar
+mkdir build
+cd build
+# ../c47a1/configure --help
+# useful info for compilation flags
+../c47a1/configure --without-openmm
+make -j 4
+# or however many cpu-cores the machine has
+# standalone executable is placed in build directory

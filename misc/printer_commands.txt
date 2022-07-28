@@ -1,0 +1,10 @@
+sudo service cups restart
+lpstat -p
+lpstat -s
+sudo cupsenable Kyocera-Kyocera-ECOSYS-P6235cdn-\(KPDL\)
+sudo lpadmin -x Kyocera-Kyocera-ECOSYS-P6235cdn-\(KPDL\)
+
+Neuen Drucker einrichten:
+sudo system-config-printer
++Add printer
+provide ppd
