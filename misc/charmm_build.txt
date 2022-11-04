@@ -1,5 +1,5 @@
 # for c47
-/home/stefan/c47a1.tar or kappa:/scratch/data/andras/charmm/c47a1.tar
+/home/stefan/c47a1.tar or lambda:/scratch/data/andras/charmm/c47a1.tar (or kappa:/scratch/data/andras/charmm/c47a1.tar)
 tar xf c47a1.tar
 mkdir build
 cd build
