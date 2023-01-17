@@ -1,0 +1,32 @@
+# ORCA and OpenMPI for rs01
+# download latest orca version from https://orcaforum.kofo.mpg.de/app.php/dlext/
+
+tar -xf orca_X_x_x_linux_x86-64_shared_openmpiYyy.tar.xz
+
+# a directory called orca_X_x_x_linux_x86-64_shared_openmpiYyy should
+# have been created. Download the corresponding openmpi tarball from
+# https://www.open-mpi.org/software/ompi/v4.1/ or whichever number Y and y
+# orca is compiled for
+
+tar -xf openmpi-Y.y.y.tar.gz
+mkdir ~/openmpi
+cd openmpi-Y-y-y
+
+# configure flags are important
+
+./configure --prefix=/home/youruser/openmpi/ --disable-builtin-atomics --with-slurm
+
+# some warning will appear, as long as there are no errors, go ahead and do
+
+make all install
+
+# set PATH and LD_LIBRRARY_PATH in your .bashrc
+
+export PATH=/home/youruser/orca_X_x_x_linux_x86-64_shared_openmpiYyy:${PATH}
+export LD_LIBRARY_PATH=/home/youruser/orca_X_x_x_linux_x86-64_shared_openmpiYyy:${LD_LIBRARY_PATH}
+
+export PATH=/home/youruser/openmpi/bin/:${PATH}
+export LD_LIBRARY_PATH=/home/youruser/openmpi/lib/:${LD_LIBRARY_PATH}
+
+# source your .bashrc
+source ~/.bashrc
