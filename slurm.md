@@ -205,3 +205,17 @@ sacctmgr create user name=<username> cluster=clustername DefaultAccount=mdyusers
 
 Once everything in in place, the queueing should now be enabled. You may need to resatrt the daemons
 (`slurmd` on the compute nodes as well as `slurmctld` and `slurmdbd` on the head) before the changes take effect.
+
+### Troubleshooting remarks
+
+If nodes are put in a `down` state without any apparent reason, but they can be reached via ping and ssh,
+check whether the system times are in sync with the clusterhead (that is, compare the output of
+```
+date
+```
+on the head and the node in question). If those are out of sync by more than 5 minutes, munge won't allow any
+communication between the controller and slurmd. Set the hwclock time manually by entering
+```
+date --set hh:mm:ss
+```
+where hh:mm:ss is the current time as reported by the head.
