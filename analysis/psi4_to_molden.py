@@ -52,7 +52,10 @@ while len(x) != 0:
     if x[:len(freq_str)] == freq_str:
         l = x.split()
         for i in range(3):
-            freq.append(float(l[i + 2]))
+            try:
+                freq.append(float(l[i + 2]))
+            except ValueError:
+                freq.append(float(l[i + 2][:-1])*-1)
         l = input.readline().split()
         while l[0][0] not in string.digits:
             l = input.readline().split()
@@ -65,16 +68,16 @@ while len(x) != 0:
         bx3 = []
         by3 = []
         bz3 = []
-        while len(l) == 11:
-            bx1.append(float(l[2]))
-            by1.append(float(l[3]))
-            bz1.append(float(l[4]))
-            bx2.append(float(l[5]))
-            by2.append(float(l[6]))
-            bz2.append(float(l[7]))
-            bx3.append(float(l[8]))
-            by3.append(float(l[9]))
-            bz3.append(float(l[10]))
+        while len(l) != 0:
+            bx1.append(float(l[-9]))
+            by1.append(float(l[-8]))
+            bz1.append(float(l[-7]))
+            bx2.append(float(l[-6]))
+            by2.append(float(l[-5]))
+            bz2.append(float(l[-4]))
+            bx3.append(float(l[-3]))
+            by3.append(float(l[-2]))
+            bz3.append(float(l[-1]))
             l = input.readline().split()
         X = X + bx1 + bx2 + bx3
         Y = Y + by1 + by2 + by3
