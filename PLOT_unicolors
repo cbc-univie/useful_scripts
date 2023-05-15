@@ -1,0 +1,462 @@
+#!/bin/bash
+##################################################################
+echo "--- PLOT v5.3 ---"
+echo "Type \"PLOT -h\" for help. "
+##################################################################
+# S u b r o u t i n e s
+##################################################################
+adddefinedcolors()
+{
+  local file=$1
+  local count=$2
+  local a=1
+  local b=0
+  cat <<EOF >>$file
+set palette defined (\
+0 "#0063a6", 1 "#11897a", 2 "#94c154", \
+3 "#f6a800", 4 "#dd4814", 5 "#a71c49" )
+unset colorbox
+EOF
+  for (( a=1; a <= count; a++ ))
+      {
+	b=$(echo "$a $count" | awk '{ printf("%f\n", $1/$2) }')
+# echo "set style line $a linetype 1 linecolor palette fraction $b linewidth 1.000" >> $file
+	cat <<EOF >>$file
+set style line $a lt 1 lc palette fraction $b lw 1
+EOF
+     }
+}
+
+
+addunicolors()
+{
+  local file=$1
+  local count=$2
+  local a=1
+  local b=0
+  local colors=("\"#0063a6\"" "\"#11897a\"" "\"#94c154\"" "\"#f6a800\"" "\"#dd4814\"" "\"#a71c49\"" )
+  local col=""
+  cat <<EOF >>$file
+
+set style line 1 lt rgb ${colors[0]}
+set style line 2 lt rgb ${colors[5]}
+set style line 3 lt rgb ${colors[2]}
+set style line 4 lt rgb ${colors[3]} 
+set style line 5 lt rgb ${colors[1]}
+set style line 6 lt rgb ${colors[4]}
+set style line 7 lt rgb ${colors[0]}
+set style line 8 lt rgb ${colors[5]}
+set style line 9 lt rgb ${colors[2]}
+set style line 10 lt rgb ${colors[3]} 
+set style line 11 lt rgb ${colors[1]}
+set style line 12 lt rgb ${colors[4]}
+set style line 13 lt rgb ${colors[0]}
+set style line 14 lt rgb ${colors[5]}
+set style line 15 lt rgb ${colors[2]}
+set style line 16 lt rgb ${colors[3]} 
+set style line 17 lt rgb ${colors[1]}
+set style line 18 lt rgb ${colors[4]}
+set style line 19 lt rgb ${colors[0]}
+set style line 20 lt rgb ${colors[5]}
+set style line 21 lt rgb ${colors[2]}
+set style line 22 lt rgb ${colors[3]} 
+set style line 23 lt rgb ${colors[1]}
+set style line 24 lt rgb ${colors[4]}
+unset colorbox            
+
+EOF
+cat <<EOF >>$file
+
+set style increment user
+EOF
+
+}
+
+gnuplot_setup()
+{
+  cat > $1 <<EOF
+set grid lw 0.5
+$plot
+$grid
+$xlabel
+$ylabel
+$logscale
+set title "$datum"
+$addoptions
+EOF
+}
+
+check_perlstat()
+{
+  if [[  ! -e $1 || ! -x $1  ]]; then
+     echo "Cannot find or execute $perlstat. Exiting."
+     exit 0;
+  fi
+}
+
+check_argument()
+{
+  local option=$1
+  if [ -p "$OPTARG" ]; then
+     echo " -$1 requires a filename as argument"
+     exit 1;
+  fi
+}
+
+##################################################################
+# Main program
+##################################################################
+datum=$(date +"%a %d.%m.%y %k:%M")
+perlstat=$(which PERLSTAT)
+
+# people may plot data in directories in which they are not 
+# allowed to write temporary files.
+psfile="/home/$(whoami)/gnuplot.ps.$$"
+inpfile="/home/$(whoami)/gnuplot.inp.$$"
+regfile="/home/$(whoami)/gnuplot.reg.$$"
+
+# default values
+plot=""
+xrange="[]"
+yrange="[]"
+using="1:2:"
+logscale=""
+smooth=""
+type="w l" # short for: with lines
+plotarg=""
+printer="-Php2727nf"
+addoptions=""
+xlabel=""
+ylabel=""
+
+##################################################################
+# Parser
+##################################################################
+while getopts "abcC:d:ghl:m:M:no:p:P:t:T:x:y:X:Y:" option
+do
+ case $option in
+  a) smooth="smooth acsplines";;
+  b) smooth="smooth bezier";;
+  c) smooth="smooth csplines";;
+  C) if [ $OPTARG = "d" ]; then
+	  colorbox="discrete"
+     elif [ $OPTARG = "g" ]; then
+	  colorbox="gradient"
+     fi;;
+  d) using="$OPTARG:";;
+  g) grid="unset grid";;
+  h) perldoc PLOT
+     exit ;;			  
+  l) if [ $OPTARG = "x" ]; then
+	logscale="$logscale; set logscale x"
+     elif [ $OPTARG = "y" ]; then
+	logscale="$logscale; set logscale y"
+     elif [ $OPTARG = "xy" ]; then
+	logscale="set logscale x; set logscale y"
+     fi;;
+  m) statfile="a"
+     lopt="l"
+     l="$OPTARG"
+     check_perlstat $perlstat;;
+  M) statfile="a"
+     lopt="x"
+     l="$OPTARG"
+     check_perlstat $perlstat;;
+  n) normalize=1
+     echo " -> Normalizing with the first value of the 2nd column";;
+  o) addoptions="$OPTARG"
+     echo " -> Additional options: $addoptions";;
+  p) if [ -p "$OPTARG" ]; then
+	echo " -p requires a filename as argument"
+	exit 1;
+     else
+	psfile="$OPTARG"
+     fi
+     echo " -> Output $psfile"
+     plot="set term postscript color enhanced 10 solid; set output \"$psfile\"";;
+  P) printer="-P $OPTARG"
+     plot="set term postscript color enhanced 10 solid; set output \"$psfile\""
+     qprint="true";;
+  t) type="$OPTARG";;
+  T) plotarg="$OPTARG"
+     echo "$plotarg";;
+  x) xrange="[$OPTARG]";;
+  y) yrange="[$OPTARG]";;
+  X) xlabel="set xlabel \"$OPTARG\"";;
+  Y) ylabel="set ylabel \"$OPTARG\"";;
+ esac
+done
+
+
+
+shift $(($OPTIND - 1))
+
+
+##################################################################
+# Creating gnuplot script
+##################################################################
+if [ $# == 0 ]; then
+   if [ $plotarg ]; then
+      gnuplot_setup $inpfile
+
+      graph="plot $xrange $yrange $plotarg $type"
+      echo "$graph">>$inpfile
+      echo "pause -1">>$inpfile
+      echo "Evoking gnuplot ..."
+      gnuplot $inpfile
+   fi
+   exit
+else
+   gnuplot_setup $inpfile
+fi
+
+##################################################################
+# Perlstat
+##################################################################
+
+if [ $statfile ]; then
+    dateien="Plotting data files and respective regression equation: \n"
+else
+    dateien="Plotting files:" 
+fi
+
+
+if [[ $colorbox = "gradient" ]]; 
+then
+	lsi=1
+	adddefinedcolors $inpfile ${#@}
+
+elif [[ $colorbox = "discrete" ]]; 
+then
+	lsi=1
+	addunicolors $inpfile 
+fi
+
+# also see http://www.gnuplot.info/docs_4.0/gnuplot.html
+graph="plot $xrange $yrange"
+
+# plotting (and computing regression) of all column-pairs specified in $using
+ny=1
+while [ ${#using} != 0 ]
+	do
+  ycolumn=${using%%:*}
+  using=${using#*:}
+	
+  if [ $ny = 1 ]; then
+     xcolumn=$ycolumn
+  else
+     for Datei in "$@"
+     do
+        dateien="$dateien $Datei"
+				if [ $normalize ]; then
+						Datei="<awk '{if(FNR==1)norm=\$2}{print \$1,\$2/norm}' $Datei"
+				fi
+        if [ $statfile ]; then
+           echo "Executing $perlstat -f $Datei -r $xcolumn:$ycolumn -$lopt $l ..."
+           $perlstat -f $Datei -r $xcolumn:$ycolumn  -$lopt $l > $regfile
+           m=` grep 'm ='  $regfile | awk '/[0-9]/ {print $3}' `
+           b=` grep 'm ='  $regfile | awk '/[0-9]/ {print $6}' `
+           rm $regfile
+           dateien="$dateien \t\t y = $m * x + $b \n"
+					 echo "y = $m * x + $b"
+#           graph="$graph $m*x+$b linecolor rgb \"light-gray\", "
+           graph="$graph $m*x+$b linecolor rgb \"light-gray\""
+           graph="$graph title \"$m*x+$b for lines $l\", "
+        fi
+				if [ $colorbox ]; then
+#						graph="$graph \"$Datei\" u $xcolumn:$ycolumn $smooth $type ls $lsi, "
+						graph="$graph \"$Datei\" u $xcolumn:$ycolumn $smooth $type ls $lsi, "
+						let "lsi+=1"
+				else
+						graph="$graph \"$Datei\" u $xcolumn:$ycolumn $smooth $type, "
+				fi
+     done
+  fi
+  let "ny +=1"
+done
+
+if [ "$plotarg" ]; then graph="$graph $plotarg"; fi
+
+echo "${graph%%, }">>$inpfile
+#printf "%s " $graph >>$inpfile
+
+if [ -z "$plot" ];then
+  echo "pause -1">>$inpfile
+fi
+
+echo "Plotting files: "
+for file in $@
+do
+		echo $file
+done
+echo
+#echo -e "$dateien"
+
+echo "Evoking gnuplot ..."
+gnuplot $inpfile
+
+if [ -n "$qprint" ]; then
+#		lpr $printer gnuplot.ps
+		echo; echo "I DID NOT PRINT!"
+		echo "-------------- the gnuplot script ----------------"
+		cat $inpfile
+		echo "-------------- ------------------ ----------------"
+fi
+
+
+#echo "Remove input file ..."
+rm $inpfile
+
+##################################################################
+# Documentation
+##################################################################
+# Use a : NOOP and doc to embed documentation 
+# (vossen, newham: bash cookbook: p85)
+: << 'END_OF_DOCS'
+
+=head1 NAME
+
+PLOT v5.0 ---  plots faster (with gnuplot)
+
+(c) 2008 Michael Haberler, Christian Schroeder
+
+SEE ALSO: http://gnuplot.sourceforge.net/demo_4.0/
+
+=head1 SYNOPSIS
+
+PLOT [OPTIONS] <file(s)>
+
+=head1 OPTIONS
+
+-a = Smoothing of curve by fit to acsplines
+in the gnuplot script: 
+
+     gnuplot command: plot 'my.dat' smooth acsplines
+
+-b = Smoothing of curve by fit to bezier curves
+
+     gnuplot command: plot 'my.dat' smooth bezier
+
+-c = Smoothing of curve by fit to csplines
+
+     gnuplot command: plot 'my.dat' smooth csplines
+
+-C = Color graph according to palette (see script) in the gnuplot script: 
+
+     gnuplot command: set palette defined ( 0 "green", 1 "blue" )
+
+     gnuplot command: plot "graph.dat" linecolor palette fraction 0.1
+
+-d [xvalues:yvalues[:yvalues2[:yvalues3]...]] 
+   = Use columns "xvalues" and "yvalues" (and "yvalues1" and ...) of <file> 
+for plot.
+
+     gnuplot command: plot ... using [xvalues:yvalues[:yvalues2]...]
+
+-g = gnuplot command: unset grid lw .5
+
+-lx, -ly, -lxy 
+   = Logarithmic x-, y-, or x- and y-scale
+
+     gnuplot command: set logscale x
+
+     gnuplot command: set logscale y
+
+-M [xrange1:xrange2] 
+   = Compute and plot linear regression from xrange1 to xrange2 using
+"PERLSTAT". 
+
+-m [line1:line2] 
+   = Compute and plot linear regression from line1 to line2 using "PERLSTAT". 
+It is also possible to only give the start line: "-m 1:".
+
+-n = Normalize with the first value of the second column (ie. divide all values by the first one).
+     (TODO: Normalize with the first value of the actually plotted column!)
+
+-o [options] 
+   = Directly enter gnuplot commands. eg.: -o "set key bottom right"
+
+     Examples:
+
+     gnuplot command: set key bottom right
+
+     gnuplot command: set xtics ('-2pi' -6.283,'-3pi/2' -4.712,'-pi' -3.1415,'-pi/2' -1.5708,'0' 0,'pi/2' 1.5708,'pi' 3.1415,'3pi/2' 4.712,'2pi' 6.283)
+
+     gnuplot command: set xtics ('-pi' -3.1415,'-3pi/4' -2.3561,'-pi/2' -1.5708,'-pi/4' -0.7853,'0' 0,'pi/4' 0.7853,'pi/2' 1.5708,'3pi/4' 2.3561,'pi' 3.1415)
+
+     gnuplot command: set format y "%2.1t{/Symbol \327}10^{%L}"
+
+     gnuplot command: set lmargin 0; set rmargin 0; set tmargin 0; set bmargin 0;
+
+     gnuplot command: set xtics rotate by 90
+
+-p [file]
+   = Save plot as [file] in PostScript format. If file="" the default file name 
+     /home/user/gnuplot.ps is used.
+
+     gnuplot command: set term postscript color enhanced 10; set output '[file]'
+
+-P [anything] 
+   = Print gnuplot.gp file to stdout. (Used to print plot directy on printer
+[anything].)
+
+-t [type] 
+   = prints lines with specified type. Default value is -t "with lines".
+     gnuplot command: plot [type]
+
+     Examples:
+
+     gnuplot command: plot title "f(x)"
+
+     gnuplot command: plot w points
+
+     gnuplot command: plot w linepoints
+
+     gnuplot command: plot w impulses
+
+     gnuplot command: plot w boxes fs solid 0.1 (in conjunction with -o 'set boxwidth 1.0 relative)
+
+     gnuplot command: plot w l lw 2
+     
+
+-T [function]
+   = gnuplot command: plot [function]
+
+     Example:
+
+     gnuplot command: plot 3.2*exp(-x/35.5)
+
+-x [xrange1:xrange2] 
+   = gnuplot command: set xrange [xrange1:xrange2]
+
+-y [yrange1:yrange2] 
+   = gnuplot command: set yrange [yrange1:yrange2]
+
+-X [label] 
+   = gnuplot command: set xlabel [label]
+
+-Y [label] 
+   = gnuplot command: set ylabel [label]
+
+=head1 EXAMPLES
+
+Witty, witty workaround to add things to:  plot "<file>" with [type]:
+
+---------------------------------------------------------------------
+
+PLOT -p interaction_zn-s-o_1-3.dat.ps -X 'E(ZN2-CYD8)/kcal/mole' -Y 'r(ZN-S(green),ZN-O(red))/A' -t "with linespoints, \"interaction_zn-s-o_1-3.dat\" using 3:5 with linespoints" -d 4:5 interaction_zn-s-o_1-3.dat
+
+PLOT -T 3*x+5 -x0:10 -g -t"w p lw 2.5" -o 'set sample 10; set key t l'
+
+=head1 TODO
+
+=over 2
+
+=item * Explain connection between options and gnuplot commands, so that it is possible for gnuplot-savvys to get more out of PLOT!
+
+=back
+
+
+=cut
+
+END_OF_DOCS
