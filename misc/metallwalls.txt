@@ -1,0 +1,28 @@
+# to build metalwalls, you will need the correct libraries,
+# e.g. for rs10 this config file
+
+# don't use the intel oneapi mpi libraries under /opt , take
+# a working (i.e. self-compiled) openmpi instead
+F90 := /path/to/your/openmpi/bin/mpif90
+F90FLAGS := -O2 -g
+FPPFLAGS := -cpp
+#LDFLAGS := -llapack # this flag would use the system-wide lapack,
+# which has to be installed from a liblapack-dev or lapack-devel package
+
+# alternatively, you can use the liblapack/libopenblas from a conda env
+# (make sure to install them from the conda-forge/anaconda channels)
+LDFLAGS := -L/path/to/your/conda/envs/some_env/lib/ /path/to/your/conda/envs/some_env/lib/liblapack.so
+# this has the additional benefit that (almost) every library you need
+# will be located under /home and hence exported to the nodes
+# if you go for the above option, make sure to include the `lib` directory
+# of the conda env in your LD_LIBRARY_PATH (either in your .bashrc or
+# exported from the command line if you don't need it permanently)
+
+# any conda env with numpy should come bundled with f2py
+F2PY := f2py
+# f90wrap on the other hand requires a separate install from conda-forge
+F90WRAP := f90wrap
+FCOMPILER := gnu95
+J := -J
+# Path to pFUnit (Unit testing Framework)
+# PFUNIT := /opt/pfunit/pfunit-parallel
