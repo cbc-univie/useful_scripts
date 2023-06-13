@@ -1,6 +1,18 @@
-sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
-isudo ln -fs /usr/lib/x86_64-linux-gnu/libxcb-util.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1
+#sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
+#isudo ln -fs /usr/lib/x86_64-linux-gnu/libxcb-util.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1
 
-alternatively: create env from kappa ffpenv.yml, manually install pip packages,
-including ffparam from /home/florian/software/ffparam_v1.0.0 ; then
-conda -c conda-forge pyside2
+# alternatively: create env from ffpenv.yml
+conda env create -f ffpenv.yml
+
+# insatll pyside manually
+conda install -n ffpenv -c conda-forge pyside2
+
+# download the source of ffparam from ffparam.maryland.edu or copy an older version from
+# /home/florian/software/ffparam_v1.0.0
+# or from
+# /site/lambda/andras/ffpenv/ffparam_v1.0.0.tar.gz
+# then untar the package, activate the env and install
+tar -xvzf ffparam_v1.0.0.tar.gz
+cd ffparam_v1.0.0
+conda activate ffpenv
+pip install .
