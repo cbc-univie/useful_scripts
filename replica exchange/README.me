@@ -1,0 +1,10 @@
+Replica exchange
+================
+
+Replica exchange is used to overcome high energy barriers while using multiple seeds at once.
+
+To use the scripts copy the determine_next_temp.py and startall.sh into your parent directory.
+Then create as many replica as you like with different temperatures. The run_npt.sh needs to be in the directories of the different replica.
+startall.sh waits for each step to be finished to change the temperature and run the next step.
+
+If you want to analyze the replica by temperature you need to reorder them accordingly as the are separated by seed number.
