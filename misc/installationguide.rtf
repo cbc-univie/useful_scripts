@@ -1,0 +1,260 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2865
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\froman\fcharset0 Times-Roman;
+\f3\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red50\green244\blue241;\red251\green30\blue255;
+\red224\green228\blue9;\red235\green239\blue24;\red81\green206\blue255;\red254\green205\blue206;}
+{\*\expandedcolortbl;;\csgray\c0;\cssrgb\c19572\c95778\c95688;\cssrgb\c100000\c29675\c100000;
+\cssrgb\c90000\c90000\c0;\cssrgb\c93803\c93590\c10851;\cspthree\c50081\c83271\c98297;\cspthree\c97456\c84897\c84614;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww20300\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Poltype2 installation guide:\
+What you need:\
+Conda env amoebamdpoltype\
+Conda env xtbenv\
+Tinker\
+GDMA\
+Gaussian (G09) or PSI4\
+Fennix\
+ASE\
+\
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \cf0 \expnd0\expndtw0\kerning0
+Notes: python has to be at least python3.8 (mine is 3.10 I don\'92t know if newer versions work), polype 2 has the scratch directory hardcoded: change in file: \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 /home/marion/software/poltype2/PoltypeModules/poltype.py search for scratch and change to whatever you want as long as you have permission.
+\fs24 \cf0 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+How to install Tinker (guide from https://github.com/TinkerTools/poltype2/blob/master/README/README_INSTALL.MD):\
+Go to your folder where you want to install (mine is /home/marion/software)\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs26 \cf0 \expnd0\expndtw0\kerning0
+git clone git@github.com:TinkerTools/Tinker.git\
+cd tinker\
+cd fftw\
+./configure --prefix=/path_to_tinkerfolder/fftw/ --enable-openmp --enable-threads\
+make -j 8\
+make install\
+cd ..\
+cp ./make/Makefile ./source\
+cd source
+\f0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls1\ilvl0
+\fs24 \cf0 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+Open Makefile and comment out default operating system (MAC, unless you have mac) and EDIT where to build! You do not have rights to build in /usr or /src\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+Uncomment the default linux installation lines\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+Build with cmake (make install)\
+\pard\tx720\pardeftab720\partightenfactor0
+
+\f2 \cf0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+
+\f0 \cf0 How to install GDMA (from https://www-stone.ch.cam.ac.uk/pub/gdma/):\
+Go to your folder where you want to install (\kerning1\expnd0\expndtw0 mine is /home/marion/software)\expnd0\expndtw0\kerning0
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 git clone https://gitlab.com/anthonyjs/gdma.git\
+
+\f0 Edit Makefile! Same as above with tinker, you do not have rights to write on /src or /usr\
+\
+Gaussian should be installed already.\
+\
+Now make the environments (https://github.com/TinkerTools/poltype2/blob/master/README/README_INSTALL.MD) do not try to use the yml file, it takes forever and does not work:\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs26 \cf0 conda create --name amoebamdpoltype -c psi4 psi4 --yes\
+conda install -c conda-forge geometric --yes\
+conda activate amoebamdpoltype\
+conda config --add channels conda-forge\
+conda install mdanalysis --yes\
+conda install -c conda-forge openbabel --yes\
+conda install -c rdkit rdkit --yes\
+pip install PyAstronomy\
+conda install -c conda-forge svgutils --yes\
+conda install -c conda-forge cairosvg --yes\
+conda install -c conda-forge psutil --yes\
+conda install -c conda-forge mdtraj --yes\
+conda install -c conda-forge pymbar --yes\
+conda install -c salilab modeller --yes\
+conda install -c anaconda openpyxl --yes\
+conda install -c conda-forge pdb2pqr --yes\
+conda install -c conda-forge pdbfixer --yes\
+\
+conda install -c conda-forge ase --yes\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf0 Install fennol (https://github.com/TinkerTools/poltype2/blob/master/README/README_INSTALL.MD)\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 git clone https://github.com/thomasple/FeNNol.git\
+cd FeNNol\
+pip install .\
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf0 Create a NEW! xtb env (
+\fs24 https://github.com/TinkerTools/poltype2/blob/master/README/README_INSTALL.MD
+\fs26 ):
+\f1 \
+conda create --name xtb\
+conda activate xtb\
+conda install -c conda-forge xtb --yes\
+\
+
+\f0 Copy your .bashrc file\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 cp .bashrc .poltype2_bashrc 
+\f0 \
+ and add the following to the .poltype2_bashrc (use your own paths):\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf3 \kerning1\expnd0\expndtw0 \CocoaLigature0 #g09\cf2 \
+export g09root=\cf4 "/opt"\cf2 \
+export GAUSS_SCRDIR=\cf4 \'84/home/marion/scratch\'93\cf2 \
+. $g09root/g09/bsd/g09.profile\
+\
+\cf3 # needed for poltype2\cf2 \
+source $g09root/g09/bsd/g09.profile\
+Export SCRATCH=/home/marion/\cb5 scratch\cb1 \
+export GDMADIR=/home/marion/software/bin/\
+export PATH=/home/marion/software/gdma/bin/:$PATH\
+export PATH=/home/marion/software/tinker/bin/:$PATH\
+export PATH=/home/marion/miniconda3/envs/xtb/bin/:$PATH
+\f1\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf0 You have to source your .poltype2_bashrc when you want to use poltype2 and activate amoebamdpoltype env! Put the following into your run.sh scripts when you put it on the cluster (use your own paths):\
+source /home/Marion/.poltype2_bashrc\
+source /home/marion/miniconda3/bin/activate amoebamdpoltype \
+\cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 \
+Unfortunately minimize from tinker does not like poltype. You have to write a wrapper for it to handle stdins correctly. I just put a wrapper in the same folder as my poltype.py is:\
+minimize_wrapper.sh:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf3 #!/bin/bash\cf2 \
+\cf3 # Pipe a single newline to minimize\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf6 echo\cf4  \cf6 ""\cf4  \cf2 | /home/marion/software/tinker/bin/minimize \cf6 "\cf7 $@\cf6 "
+\f0\fs26 \cf2 \
+\
+And make it executable:\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 chmod +x minimize_wrapper.sh\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 Same for superpose:\
+superpose_wrapper.sh:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf3 #!/bin/bash\cf2 \
+\cf3 # Pipe a single newline to minimize\cf2 \
+\cf6 echo\cf4  \cf6 ""\cf4  \cf2 | /home/marion/software/tinker/bin/superpose \cf6 "\cf7 $@\cf6 "
+\f0\fs26 \cf2 \
+\
+And make it executable:\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 chmod +x minimize_wrapper.sh\
+\pard\pardeftab720\partightenfactor0
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf0 You also need a wrapper for potential. However, unlike minimize it needs the actual filename. As the procedure in poltype is always the same it passes the same filename endings, I did this with a wildcard:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 #!/bin/bash\
+# Pipe a single newline to minimize\
+\
+echo "$(pwd)/Temp/*_3D_fortinker.cube" | /home/marion/software/tinker/bin/potential "$@"\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 And make it executable:\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 chmod +x potential_wrapper.sh\
+\pard\pardeftab720\partightenfactor0
+
+\f0 \cf0 \
+Then you have to bypass the normal executable in poltype.py with your wrapper:\
+Find the line containing:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf3 \kerning1\expnd0\expndtw0 \CocoaLigature0 #self.\cf2 \cb5 minimize\cf3 \cb1 exe=self.SanitizeMMExecutable(self.\cf2 \cb5 minimize\cf3 \cb1 exe) \
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 And comment it out. Then add:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 self.\cb5 minimize\cb1 exe = \cf4 "/home/marion/software/poltype2/PoltypeModules/\cf2 \cb5 minimize\cf4 \cb1 _wrapper.sh"
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 Now minimize should work perfectly fine.\
+Do the same for the other two modules (they are in the same block of code)\
+\
+Check if all programs work individually then it should be fine.\
+Have one simple mollie to check (water for example) \
+Check xtb, psi4 (you have to run that on the cluster):\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf0 xtb molecule.xyz --opt
+\f0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf0 (In bash script) 
+\f1 psi4 \
+
+\f0 test.psi4 file:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf0 \'91\'92\'92\
+
+\f3\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 molecule \{\
+0 1\
+H 0 0 0\
+H 0 0 0.74\
+\}\
+\
+set \{\
+  basis cc-pVDZ\
+\}\
+\
+energy('scf')\
+
+\f1\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \'91\'92\'92\
+
+\f3\fs22 \cf2 \kerning1\expnd0\expndtw0 \CocoaLigature0 (in bash script) psi4 \cf6 test\cf2 .psi4 \cf8 --loglevel\cf2  \cf4 30\cf2  \cf6 test\cf2 .log 
+\f1\fs26 \cf0 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf0 to actually test minimize, you can use the folder Parm_Ethanol in poltype2. Write a bash script that executes minimize via the wrapper:
+\f1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \
+\
+}
